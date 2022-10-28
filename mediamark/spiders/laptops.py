@@ -46,7 +46,7 @@ class LaptopsSpider(scrapy.Spider):
     allowed_domains = ['www.mediamarkt.es']
     url = 'https://www.mediamarkt.es/es/category/port%C3%A1tiles-153.html'
     today = datetime.now().strftime("%Y-%m-%d")
-    log_file = f'GetLaptops/logs/{today}.log'
+    log_file = f'dirlog/{today}.log'
     custom_settings = {'LOG_LEVEL': 'INFO', 'LOG_FILE': log_file}
 
     def start_requests(self):
@@ -79,4 +79,3 @@ class LaptopsSpider(scrapy.Spider):
                 'precio_anterior':precio_anterior,
                 'precio_actual':precio_actual
             }
-            

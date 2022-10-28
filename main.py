@@ -1,23 +1,27 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
-from datetime import datetime, date
-from utils import get_past_day
-import time
+from datetime import datetime
 import os
 import subprocess
 import logging
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+def dir_logging():
+    if not os.path.exists('dirlog'):
+        os.mkdir(f'dirlog')
 
 def set_logging():
-    # Get current time and convert to date
+    # Obtengo el dia actual
     today = datetime.now().strftime("%Y-%m-%d")
-    log_file = f'GetGold/logs/{today}.log'
+    log_file = f'dirlog/{today}.log'
 
     # Create an empty log file if not exist
     if not os.path.exists(log_file):
         open(log_file, 'a')
     else:
         pass
-    # Set logging config
+    # Configuro el log_file, llamo a basicConfig para que cree el archivo con los loggins posteirores
     logging.basicConfig(filename=log_file,
                         encoding='utf-8',
                         level=logging.INFO,
@@ -28,31 +32,20 @@ def set_logging():
 def asyncio_schedule():
     """schedule tasks"""
     def run_spider():
+        dir_logging()
         set_logging()
         # Start
         logging.info('Started crawling {}...'.format(datetime.now()))
         # Run scrapy crawl
-        subprocess.run(['scrapy', 'crawl', 'gold'])
+        subprocess.run('scrapy crawl laptops -O ejemplo.csv', shell=True)
         # End
         logging.info('Finished crawling {}...'.format(datetime.now()))
 
-
-    def remove_old_log():
-        # Delete logs older than 21 days
-        date_delete = get_past_day('day', 21)
-        log_delete = f'GetGold/logs/{date_delete}.log'
-        try:
-            os.remove(log_delete)
-        except Exception as msg:
-            logging.info(f"log '{log_delete}' doesn't exist, skip delete log file!")
-        else:
-            logging.info(f"deleted {log_delete}!")
+        # logging.shutdown()
 
     scheduler = AsyncIOScheduler()
     # Add task to crawl per hour between 7a.m to 7p.m
-    scheduler.add_job(func=run_spider, trigger='cron', hour='7-19')
-    # Add task to clean old log, keep logs for last 14 days only, run at 11:30p.m
-    scheduler.add_job(func=remove_old_log, trigger='cron', hour='23', minute='30')
+    scheduler.add_job(func=run_spider, trigger='interval', seconds=10)
     # Start process
     scheduler.start()
     print('Press Ctrl+C to exit')
@@ -65,7 +58,7 @@ def asyncio_schedule():
 
 if __name__ == '__main__':
     # Running message
+    print(' APP IS RUNNING '.center(60,'*'))
     print('Started application {}'.format(datetime.now()))
-    print('****************************** APP IS RUNNING ******************************')
     # Run process
     asyncio_schedule()

@@ -58,7 +58,7 @@ def asyncio_schedule():
 
 if __name__ == '__main__':
     # Running message
-    print(' APP IS RUNNING '.center(70,'*'))
+    print(' APP IS RUNNING '.center(60,'*'))
     print('Started application {}'.format(datetime.now()))
     # Run process
     asyncio_schedule()

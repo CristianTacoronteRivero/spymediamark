@@ -4,6 +4,8 @@ tutorial/
 *.csv
 *.json
 test.py
+credenciales.json
+*.*#
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

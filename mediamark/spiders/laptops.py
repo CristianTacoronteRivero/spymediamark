@@ -1,8 +1,10 @@
 import scrapy
 from numpy import nan
 from datetime import datetime
-import json
+from mediamark.items import MediamarkItem
+
 #  scrapy shell -s USER_AGENT='custom user agent' 'http://www.example.com'
+
 
 def precios_item(extract):
     """Separa el precio anterior y actual del item seleccionado.
@@ -17,29 +19,6 @@ def precios_item(extract):
         return float(extract[0]), float(extract[1])
     else:
         return nan, float(extract[0])
-
-
-
-# class LaptopsSpider(scrapy.Spider):
-#     name = 'laptops'
-#     allowed_domains = ['www.mediamarkt.es']
-#     start_urls = ['https://www.mediamarkt.es/es/category/port%C3%A1tiles-153.html']
-
-#     def parse(self, response):
-#         items = response.xpath('//*[@data-test="mms-search-srp-productlist-item"]')
-#         fecha = fecha = datetime.now().strftime('%Y/%m/%d')
-
-#         for item in items:
-#             modelo = item.xpath('.//p/text()').get()
-#             precios = item.xpath('.//span[2]/text()').extract()
-#             precio_anterior, precio_actual = precios_item(precios)
-
-#             yield {
-#                 'fecha':fecha,
-#                 'modelo':modelo,
-#                 'precio_anterior':precio_anterior,
-#                 'precio_actual':precio_actual
-#             }
 
 class LaptopsSpider(scrapy.Spider):
     name = 'laptops'
@@ -64,18 +43,14 @@ class LaptopsSpider(scrapy.Spider):
 
     def parse(self, response):
         utc_time = response.meta['utc_time']
-        items = response.xpath('//*[@data-test="mms-search-srp-productlist-item"]')
-        fecha = fecha = datetime.now().strftime('%Y/%m/%d')
+        item = MediamarkItem()
 
-        for item in items:
-            modelo = item.xpath('.//p/text()').get()
-            precios = item.xpath('.//span[2]/text()').extract()
-            precio_anterior, precio_actual = precios_item(precios)
+        for dato in response.xpath('//*[@data-test="mms-search-srp-productlist-item"]'):
+            item['utctime'] = datetime.utcnow().strftime('%Y-%m%d %H:%M:%S')
+            item['modelo'] = dato.xpath('.//p/text()').get()
 
-            yield {
-                'utc_time':utc_time,
-                # 'fecha':fecha,
-                'modelo':modelo,
-                'precio_anterior':precio_anterior,
-                'precio_actual':precio_actual
-            }
+            precio_anterior, precio_actual = precios_item(dato.xpath('.//span[2]/text()').extract())
+            item['precio_anterior'] = precio_anterior
+            item['precio_actual'] = precio_actual
+
+            yield item

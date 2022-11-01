@@ -8,7 +8,7 @@ import scrapy
 
 class MediamarkItem(scrapy.Item):
     modelo = scrapy.Field()
-    utctime = scrapy.Field()
+    date_time = scrapy.Field()
     precio_anterior = scrapy.Field()
     precio_actual = scrapy.Field()
 

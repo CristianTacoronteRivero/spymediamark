@@ -41,8 +41,9 @@ class MediamarkPipeline:
         # creamos la tabla laptops
         self.cur.execute("""
         CREATE TABLE IF NOT EXISTS laptops.products(
-            modelo TEXT PRIMARY KEY,
-            utctime TIMESTAMP,
+            id SERIAL PRIMARY KEY,
+            date_time TIMESTAMP,
+            modelo TEXT,
             precio_anterior FLOAT,
             precio_actual FLOAT
         )
@@ -57,16 +58,9 @@ class MediamarkPipeline:
     def process_item(self, item, spider):
         # definimos el proceso para insertar los items
         item = ItemAdapter(item)
-        insert_query = """INSERT INTO laptops.products (modelo, utctime, precio_anterior, precio_actual)
+        insert_query = """INSERT INTO laptops.products (modelo, date_time, precio_anterior, precio_actual)
                         VALUES (%s, %s, %s, %s)"""
-        to_insert = (item['modelo'], item['utctime'], item['precio_anterior'], item['precio_actual'])
-        # try:
-        #     self.cur.execute(insert_query, to_insert)
-        #     self.connection.commit()
-        # except:
-        #     self.connection.rollback()
-        #     print("ERROR".center(100, '*'))
-        #     print(item)
+        to_insert = (item['modelo'], item['date_time'], item['precio_anterior'], item['precio_actual'])
 
         self.cur.execute(insert_query, to_insert)
         self.connection.commit()

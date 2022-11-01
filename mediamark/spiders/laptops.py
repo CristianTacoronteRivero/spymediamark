@@ -29,7 +29,7 @@ class LaptopsSpider(scrapy.Spider):
     custom_settings = {'LOG_LEVEL': 'INFO', 'LOG_FILE': log_file}
 
     def start_requests(self):
-        utc_time = datetime.utcnow().strftime('%Y-%m%d %H:%M:%S')
+        utc_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         yield scrapy.Request(
                 url=self.url,
                 headers={
@@ -46,7 +46,7 @@ class LaptopsSpider(scrapy.Spider):
         item = MediamarkItem()
 
         for dato in response.xpath('//*[@data-test="mms-search-srp-productlist-item"]'):
-            item['utctime'] = datetime.utcnow().strftime('%Y-%m%d %H:%M:%S')
+            item['utctime'] = utc_time
             item['modelo'] = dato.xpath('.//p/text()').get()
 
             precio_anterior, precio_actual = precios_item(dato.xpath('.//span[2]/text()').extract())

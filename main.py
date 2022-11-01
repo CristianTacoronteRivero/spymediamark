@@ -37,7 +37,7 @@ def asyncio_schedule():
         # Start
         logging.info('Started crawling {}...'.format(datetime.now()))
         # Run scrapy crawl
-        subprocess.run('scrapy crawl laptops -O pipeline.json', shell=True)
+        subprocess.run('scrapy crawl laptops', shell=True)
         # subprocess.run('scrapy crawl laptops -O ejemplo.csv', shell=True)
         # End
         logging.info('Finished crawling {}...'.format(datetime.now()))
